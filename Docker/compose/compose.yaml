@@ -1,0 +1,46 @@
+services:
+
+  # Mongo database
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    env_file:
+      - path: ./envs/mongo.env
+        required: true
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - "$PWD/Docker/compose/data:/data"
+      - "$PWD/Docker/scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js"
+    command:
+      - "mongod"
+    healthcheck:
+      test: 
+        - "CMD"
+        - "mongosh"
+        - "--eval"
+        - "db.adminCommand('ping')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  
+  # Mongo UI
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    env_file:
+      - path: ./envs/mongo-express.env
+        required: true
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin?ssl=false
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb
+    
+
+    
+    
