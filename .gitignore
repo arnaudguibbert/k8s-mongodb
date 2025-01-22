@@ -1,0 +1,11 @@
+# DockerFile
+*DockerFile
+
+# Env file for docker
+Docker/**/*.env
+Docker/**/data/*
+
+# Kubernetes secrets
+**/secrets/*
+!**/secrets/kustomization.yaml
+
